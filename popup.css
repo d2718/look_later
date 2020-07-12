@@ -1,0 +1,44 @@
+/* Look Later browser action popup stylesheet
+ * 
+ * last updated 2020-07-12
+ */
+body {
+    font-family: sans-serif;
+    padding: 1em;
+    background-color: GhostWhite;
+}
+h2, p { text-align: right; }
+h2 > * { vertical-align: middle; } /* Vertically align the eyecon. */
+table#links_table {
+    font-size: inherit;
+    border-collapse: collapse;
+}
+th {
+    background-color: Dimgray;
+    color: GhostWhite;
+    padding: 0.5ex;
+}
+tbody tr:nth-child(even) { background-color: Gainsboro; } /* Shade alternating */
+tbody tr:nth-child(odd)  { background-color: white; }     /* table rows.       */
+table#links_table td { padding: 0.25ex 1ex; }
+td.uri, td.source {
+    max-width: 40ex;
+    white-space: pre;
+    overflow: auto;
+    cursor: pointer;
+}
+td.uri { /* Make the target URI column look like regular <A> links. */
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
+td.msg { text-align: center; }
+td.text { min-width: 20ex; }
+td.datetime, td.buttons { white-space: nowrap; }
+td.buttons img {
+    width: 1.5em; height; 1.5em;
+    cursor: pointer; 
+}
+td.buttons img:first-child { margin-right: 1ex; }
+
+span#link_count { margin-right: 2em; }

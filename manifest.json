@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    
+    "name": "Look Later",
+    "version": "0.1",
+    "description":  "Adds context menu items to store links for later visitation.",
+    
+    "permissions": [ "contextMenus", "storage" ],
+    
+    "icons": {
+        "16": "images/eyecon-16px.png",
+        "32": "images/eyecon-32px.png",
+        "48": "images/eyecon-48px.png",
+        "128": "images/eyecon-128px.png"
+    },
+    
+    "browser_action": { "default_popup": "popup.html" },
+    
+    "background": {
+        "scripts": [ "background.js" ],
+        "persistent": false
+    },
+    
+    "content_scripts": [
+        {
+            "matches": [ "*://*/*" ],
+            "js": [ "content.js" ]
+        }
+    ]
+}
