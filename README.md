@@ -38,7 +38,10 @@ in a new page and automatically deletes the associated bookmark. (There is
 also an option for each bookmark to follow it without deleting it, and one
 to delete it without following it.)
 
-### Credits.
+Clicking on the triangles in the header row of the table of links sorts
+the table; a tooltip on each triangle makes explicit the type of sort.
+
+### Credits
 
 `look_later` icon (the eye with the clock hands in it) and navigation icons
 by [Freepik](https://www.flaticon.com/authors/freepik) from

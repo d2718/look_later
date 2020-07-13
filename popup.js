@@ -8,6 +8,8 @@
 
 const DEBUG = true;
 
+// Some tuneable constants.
+
 /* If the URI of a link is long, its middle should be replaced by ellipses
  * (...). The following two items dictate how much of the beginning and
  * end of an abbreviated link to show, and also together the maximum length
@@ -27,6 +29,9 @@ const WEEK_DATE_FMT = new Intl.DateTimeFormat('en',
 const FULL_DATE_FMT = new Intl.DateTimeFormat('en',
     { year: 'numeric', month: 'short', day: '2-digit',
       hour: "numeric", minute: "numeric", second: "numeric"});
+
+// Some computed constants.
+
 // Calculated maximum URI length to display unabbreviated.
 const HREF_PREV_LENGTH = HREF_PREV_HEAD_CHARS + HREF_PREV_TAIL_CHARS;
 // Shortcut, but also insurance in case this changes in the future.
@@ -40,9 +45,9 @@ const ONE_WEEK = ONE_DAY * 7;
 // Byte counts for formatting the amount of storage used.
 const KILO = 1024;
 const MEGA = 1024 * 1024;
-/* Honestly, I don't think it's necessary to give the individual rows of
- * the table of links their own IDs */
-//const ID_PRE = "ll_link_";
+
+// The <SPAN> elements the user clicks to sort the link table.
+const SORT_SPANS = document.querySelectorAll("span.sort");
 
  /* debug_dump() is a debugging function that spits out its arguments
  * properties and functions to the console in a particular way.
@@ -70,15 +75,6 @@ function debug_dump(obj) {
     console.log(output.join(""));
 }
 
-/* len(obj) returns the number of keys in an object.
- * 
- * This doesn't really need to be its own function, but I appreciated the
- * added concision.
- */
-function len(obj) {
-    return Object.keys(obj).length;
-}
-
 /* scale_size(x) returns a number of bytes scaled in "Kb" or "Mb"
  * as appropriate.
  */
@@ -91,6 +87,55 @@ function scale_size(x) {
     } else {
         let v = x / MEGA;
         return v.toPrecision(3) + ' Mb';
+    }
+}
+
+/* functions for sorting rows of the links table */
+var sort_type = null;
+const SORT = {
+    'time_forward': function(a, b) { return a.timestamp - b.timestamp; },
+    'time_backward':  function(a, b) { return b.timestamp - a.timestamp; },
+    'alphabetical':  function(a, b) {
+            return a.text.localeCompare(b.text, navigator.language,
+                                  { sensitivity: "accent" });
+        },
+    'omegapsical': function(a, b) {
+            return b.text.localeCompare(a.text, navigator.language,
+                                  { sensitivity: "accent" });
+        },
+};
+
+/* invert_color(elt) swaps an element's computed foreground and background
+ * colors. This is used to highlight which link sorting method was last
+ * used.
+ */
+function invert_color(elt) {
+    let s = window.getComputedStyle(elt, null);
+    let bg_col = s.getPropertyValue("background-color");
+    let fg_col = s.getPropertyValue("color");
+    elt.style.backgroundColor = fg_col;
+    elt.style.color = bg_col;
+}
+
+/* sort_and_redisplay(evt) sorts the stored link data according to which
+ * sorting span was clicked and redisplays the table accordingly.
+ * 
+ * This is an event handler attached to <SPAN> elements in the <THEAD> of
+ * the links table.
+ */
+function sort_and_redisplay(evt) {
+    let targ = evt.target;
+    // The <SPAN> that was clicked should have the sort type in its
+    // "data" attribute.
+    let sort_t = targ.getAttribute("data");
+    if (sort_t != sort_type) {
+        sort_type = sort_t;
+        populate_data();
+        for(let s of SORT_SPANS) {
+            s.style.backgroundColor = "inherit";
+            s.style.color = "inherit";
+        }
+        invert_color(targ);
     }
 }
 
@@ -253,15 +298,20 @@ function populate_data() {
         
         let lnkz = itemz.links;
         if (lnkz) {
-            let n_links = len(lnkz);
+            let lnk_a = [];
+            for (let k in lnkz) {
+                if (lnkz.hasOwnProperty(k)) lnk_a.push(lnkz[k]);
+            }
+            let n_links = lnk_a.length;
             
             if (n_links > 0) {
                 tbody_elt.innerHTML = "";
-                for (let k in lnkz) {
-                    if (lnkz.hasOwnProperty(k)) {
-                        let x = link_item_line(lnkz[k]);
-                        tbody_elt.appendChild(x);
-                    }
+                let sort_t = sort_type;
+                if (!sort_t) sort_type = "time_forward";
+                lnk_a.sort(SORT[sort_t]);
+                for (let lnk of lnk_a) {
+                    let x = link_item_line(lnk);
+                    tbody_elt.appendChild(x);
                 }
                 link_n_span.innerHTML = n_links.toString();
                 return;
@@ -283,6 +333,8 @@ function populate_data() {
     });
 }
 
-// Obviously, when the popup window pops up, it should be populated
-// (popup=ulated?) with the link table and usage stats.
+// Actual execution starts here.
+
 window.addEventListener("load", populate_data);
+
+for (let s of SORT_SPANS) s.addEventListener("click", sort_and_redisplay);

@@ -2,7 +2,23 @@
  * 
  * Look Later background script
  * 
- * updated 2020-07-11
+ * updated 2020-07-12
+ */
+
+/* Stored Link Format
+ * 
+ * Links are stored in chrome.storage.local under the key "links"; this object
+ * is itself a map of key:value pairs. The key of each pair is a string
+ * representation of the timestamp when the link was added; the value is
+ * a "link object" thus:
+ * 
+ * {
+ *     timestamp: <integer> ms-since-epoch when the link was stored,
+ *     href: <String> URI of the stored link,
+ *     text: <String> text of the DOM element that was right-clicked,
+ *     origin: <String> hostname/pathname of the page from which the
+ *                      link was stored
+ * }
  */
 
 const DEBUG = true;

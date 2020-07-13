@@ -40,5 +40,6 @@ td.buttons img {
     cursor: pointer; 
 }
 td.buttons img:first-child { margin-right: 1ex; }
+span.sort { cursor: pointer; }
 
 span#link_count { margin-right: 2em; }
