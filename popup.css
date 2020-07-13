@@ -17,6 +17,7 @@ th {
     background-color: Dimgray;
     color: GhostWhite;
     padding: 0.5ex;
+    white-space: nowrap;
 }
 tbody tr:nth-child(even) { background-color: Gainsboro; } /* Shade alternating */
 tbody tr:nth-child(odd)  { background-color: white; }     /* table rows.       */
