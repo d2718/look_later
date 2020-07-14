@@ -2,7 +2,7 @@
  * 
  * Look Later popup functionality
  * 
- * updated 2020-07-12
+ * updated 2020-07-14
  */
 "use strict";
 
@@ -338,3 +338,16 @@ function populate_data() {
 window.addEventListener("load", populate_data);
 
 for (let s of SORT_SPANS) s.addEventListener("click", sort_and_redisplay);
+
+STORAGE.get("prefs", function(itemz) {
+    if (chrome.runtime.lastError) {
+        console.log(`Error reading preferences: ${chrome.runtime.lastError}`);
+        return;
+    }
+    
+    let prefz = itemz.prefs;
+    if (prefz) {
+        let font_str = `${prefz.size}% ${prefz.font}`;
+        document.querySelector("body").style.font = font_str;
+    }
+});

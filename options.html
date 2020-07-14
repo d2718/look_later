@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <title>Look Later Options</title>
+    <meta name="description" content="Look Later Options Page">
+    <meta name="modified" content="2020-07-14">
+    <style>
+body { font-family: sans-serif; }
+div.row { display: flex; }
+div.row > * { display: inline-block; margin: 1em; }
+    </style>
+</head>
+<body>
+    <div class="row">
+        <div><label for="font">Font Family</label></div>
+        <div>
+            <select id="font" name="font">
+                <option value="sans-serif">Sans-Serif</option>
+                <option value="serif">Serif</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div><label for="size">Font Size</label></div>
+        <div>
+            <input type="range" id="size" name="size" min="50" max="125">
+        </div>
+        <div>
+            <output id="sd" name="sd" for="size"></output>
+        </div>
+    </div>
+    <div class="row">
+        <p>Font sizes much larger than the default (75%) may cause the table
+        to be larger than the popup window containing it. Function will not
+        be affected; it'll just look ugly.</p>
+    </div>
+    <script src="options.js"></script>
+</body>
+</html>
