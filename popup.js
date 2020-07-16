@@ -30,6 +30,8 @@ const FULL_DATE_FMT = new Intl.DateTimeFormat('en',
     { year: 'numeric', month: 'short', day: '2-digit',
       hour: "numeric", minute: "numeric", second: "numeric"});
 
+const DEFAULT_SORT = "time_forward";
+
 // Some computed constants.
 
 // Calculated maximum URI length to display unabbreviated.
@@ -129,13 +131,13 @@ function sort_and_redisplay(evt) {
     // "data" attribute.
     let sort_t = targ.getAttribute("data");
     if (sort_t != sort_type) {
-        sort_type = sort_t;
-        populate_data();
-        for(let s of SORT_SPANS) {
-            s.style.backgroundColor = "inherit";
-            s.style.color = "inherit";
-        }
-        invert_color(targ);
+        STORAGE.set({ "sort": sort_t }, function () {
+            if (chrome.runtime.lastError) {
+                console.log(`Error storing sort preference: ${chrome.runtime.lastError}`);
+                return;
+            }
+            populate_data();
+        });
     }
 }
 
@@ -286,17 +288,19 @@ function link_item_line(lnk) {
  */
 function populate_data() {
     let link_n_span = document.getElementById("link_count");
-    let storage_use_span = document.getElementById("storage_report");
+    let storage_use_span = document.getElementById("storage_span");
+    let storage_use_meter = document.getElementById("storage_meter");
     let tbody_elt = document.querySelector("table#links_table tbody");
     tbody_elt.innerHTML = "<tr><td colspan='5' class='msg'>&hellip;</td></tr>";
     
-    STORAGE.get("links", function(itemz) {
+    STORAGE.get(["links", "sort"], function(itemz) {
         if(chrome.runtime.lastError) {
             tbody_elt.innerHTML = "<tr><td colspan='5' class='msg'>[ error ]</td></tr>";
             return;
         }
         
         let lnkz = itemz.links;
+        let sort_t = itemz.sort;
         if (lnkz) {
             let lnk_a = [];
             for (let k in lnkz) {
@@ -306,14 +310,22 @@ function populate_data() {
             
             if (n_links > 0) {
                 tbody_elt.innerHTML = "";
-                let sort_t = sort_type;
-                if (!sort_t) sort_type = "time_forward";
+                if (!sort_t) sort_t = DEFAULT_SORT;
+                sort_type = sort_t;
                 lnk_a.sort(SORT[sort_t]);
                 for (let lnk of lnk_a) {
                     let x = link_item_line(lnk);
                     tbody_elt.appendChild(x);
                 }
                 link_n_span.innerHTML = n_links.toString();
+                
+                let sort_button = null;
+                for (let s of SORT_SPANS) {
+                    s.style.backgroundColor = "inherit";
+                    s.style.color = "inherit";
+                    if (s.getAttribute("data") == sort_t) sort_button = s;
+                }
+                if (sort_button) invert_color(sort_button);
                 return;
             }
         }
@@ -328,8 +340,11 @@ function populate_data() {
             return;
         }
         let frac = 100 * b / STORAGE.QUOTA_BYTES;
-        let rpt = `${scale_size(b)}&nbsp;(${frac.toPrecision(2)}%)`;
-        storage_use_span.innerHTML = rpt;
+        storage_use_span.innerHTML = scale_size(b);
+        storage_use_meter.value = frac;
+        let use_pct = `${frac.toPrecision(2)}%`;
+        storage_use_meter.innerHTML = use_pct;
+        storage_use_meter.setAttribute("title", use_pct);
     });
 }
 

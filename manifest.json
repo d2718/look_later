@@ -3,7 +3,7 @@
     
     "name": "Look Later",
     "version": "0.1",
-    "description":  "Adds context menu items to store links for later visitation.",
+    "description":  "Improved alternative to the habit of opening new tabs in the background as a form of temporary bookmarking.",
     
     "permissions": [ "contextMenus", "storage" ],
     
