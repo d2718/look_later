@@ -75,6 +75,11 @@ function on_c_menu(evt) {
         };
         
         chrome.runtime.sendMessage({type: "link", payload: msg_obj});
+        if(DEBUG) {
+            console.log("Sent message:");
+            debug_dump(msg_obj);
+        }
+        
     } else {
         if(DEBUG) console.log(`LL: on_c_menu(...) no A element found!`);
     }
